@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.SubSys.Blinkin;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Outtake extends SubsystemBase {
 
@@ -52,7 +53,10 @@ public class Outtake extends SubsystemBase {
     double upperOut = 0;
     double upperIn = .3;
 
-
+    RevBlinkinLedDriver.BlinkinPattern upperPixel;
+    RevBlinkinLedDriver.BlinkinPattern lowerPixel;
+    public static int flashLength = 500;
+    ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     public Outtake(HardwareMap hardwareMap) {
         left = hardwareMap.get(Servo.class, "la");
@@ -151,16 +155,51 @@ public class Outtake extends SubsystemBase {
 
     @Override
     public void periodic() {
+        switch(uppercolor) {
+            case NOTHING:
+                upperPixel = RevBlinkinLedDriver.BlinkinPattern.BLACK;
+                break;
+            case WHITE:
+                upperPixel = RevBlinkinLedDriver.BlinkinPattern.WHITE;
+                break;
+            case PURPLE:
+                upperPixel = RevBlinkinLedDriver.BlinkinPattern.VIOLET;
+                break;
+            case GREEN:
+                upperPixel = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+                break;
+            case YELLOW:
+                upperPixel = RevBlinkinLedDriver.BlinkinPattern.YELLOW;
+                break;
+        }
+
+        switch(lowercolor) {
+            case NOTHING:
+                lowerPixel = RevBlinkinLedDriver.BlinkinPattern.BLACK;
+                break;
+            case WHITE:
+                lowerPixel = RevBlinkinLedDriver.BlinkinPattern.WHITE;
+                break;
+            case PURPLE:
+                lowerPixel = RevBlinkinLedDriver.BlinkinPattern.VIOLET;
+                break;
+            case GREEN:
+                lowerPixel = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+                break;
+            case YELLOW:
+                lowerPixel = RevBlinkinLedDriver.BlinkinPattern.YELLOW;
+                break;
+        }
+
+        if ((timer.time() / flashLength) % 4 == 0) {
+            lights.changeColor(upperPixel);
+        }
+        else if ((timer.time() / flashLength) % 4 == 2) {
+            lights.changeColor(lowerPixel);
+        }
+        else {
+            lights.changeColor(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        }
 
     }
-
-
-
-
-
-
-
-
-
-
 }
