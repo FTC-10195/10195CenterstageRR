@@ -16,7 +16,14 @@ public class IndividualMotorsTest extends LinearOpMode {
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("fr");
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("bl");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("br");
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //  frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+      //
+        //  backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //  telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+      //  frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         // frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
         while (opModeIsActive()) {

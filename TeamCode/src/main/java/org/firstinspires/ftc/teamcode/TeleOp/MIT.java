@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Commands.ManualDriveCommand;
 import org.firstinspires.ftc.teamcode.Commands.ManualSlides;
+import org.firstinspires.ftc.teamcode.Commands.SlideLowest;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.MecanumDrive;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Outtake;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Slides;
@@ -70,6 +71,11 @@ public class MIT extends LinearOpMode {
 
 
 
+
+
+
+
+
         );
 
 
@@ -83,7 +89,10 @@ public class MIT extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-
+           controller1.getGamepadButton(GamepadKeys.Button.A)
+                    .whenHeld(
+                       new SlideLowest(slides)
+                   );
             CommandScheduler.getInstance().run();
 
         }

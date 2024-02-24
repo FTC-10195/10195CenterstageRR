@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.SubSys.DropDown;
 import org.firstinspires.ftc.teamcode.SubSys.PaperAirplane;
 import org.firstinspires.ftc.teamcode.SubSys.SimpleBucket;
 
+import java.nio.charset.CoderMalfunctionError;
+
 @TeleOp
 @Config
 public class uncg extends LinearOpMode {
@@ -29,35 +31,16 @@ public class uncg extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotorEx frontLeftMotor = hardwareMap.get(DcMotorEx.class, "fl");
-        DcMotorEx frontRightMotor = hardwareMap.get(DcMotorEx.class, "fr");
-        DcMotorEx backLeftMotor = hardwareMap.get(DcMotorEx.class, "bl");
-        DcMotorEx backRightMotor = hardwareMap.get(DcMotorEx.class, "br");
-      //  frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-      //  backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
         DcMotorEx leftSlide = hardwareMap.get(DcMotorEx.class, "ls");
         DcMotorEx rightSlide = hardwareMap.get(DcMotorEx.class, "rs");
-
-
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         DropDown intake = new DropDown(hardwareMap);
         Arm arm = new Arm(hardwareMap);
         SimpleBucket bucket = new SimpleBucket(hardwareMap);
         PaperAirplane plane = new PaperAirplane(hardwareMap);
-
         GamepadEx controller1 = new GamepadEx(gamepad1);
         MecanumDrive drive = new MecanumDrive(hardwareMap, telemetry);
         drive.setDefaultCommand( new ManualDriveCommand(drive,
@@ -66,17 +49,54 @@ public class uncg extends LinearOpMode {
                 controller1::getLeftX,
                 () -> controller1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
         ));
-
         waitForStart();
         if(isStopRequested()) return;
 
         while(opModeIsActive()) {
-            CommandScheduler.getInstance().run();
+            //    CommandScheduler.getInstance().run();
 
-            if (gamepad1.left_bumper && dropPos != .5) {
-                dropPos += .1;
-                intake.manualMove(dropPos);
+            drive.robotDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, gamepad1.touchpad);
+            if (gamepad1.dpad_up) {
+                leftSlide.setPower(-1);
+                rightSlide.setPower(-1);
+            } else if (gamepad1.dpad_down) {
+                leftSlide.setPower(1);
+                rightSlide.setPower(1);
+            } else {
+                leftSlide.setPower(0);
+                rightSlide.setPower(0);
             }
+            if (gamepad1.dpad_left) {
+                armPos = .275;
+            } else if (gamepad1.dpad_right) {
+                armPos = .9;
+            }
+
+            arm.rotate(armPos);
+            if (gamepad1.left_bumper) {
+                bucket.intakeMode();
+            } else if (gamepad1.right_bumper) {
+                bucket.outtakeLower();
+            } else if (gamepad1.share) {
+                bucket.outtakeUpper();
+            }
+
+            intake.spin(gamepad2.a, gamepad2.b, gamepad2.x);
+            if (gamepad2.dpad_up) {
+                intake.intake();
+            } else if (gamepad2.dpad_down) {
+                intake.idle();
+            }
+        }
+
+
+
+
+
+
+           }
+      //  CommandScheduler.getInstance().reset();
+         /*
             else if (gamepad1.right_bumper && dropPos != .1) {
                 dropPos -= .1;
                 intake.manualMove(dropPos);
@@ -133,6 +153,10 @@ public class uncg extends LinearOpMode {
             telemetry.addData("Right slide", rightSlide.getCurrentPosition());
             telemetry.update();
         }
+
+          */
+
     }
 
-}
+
+

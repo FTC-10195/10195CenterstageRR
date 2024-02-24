@@ -31,9 +31,9 @@ public class ManualDriveCommand extends CommandBase {
     @Override
     public void execute() {
         drive.robotDrive(
-                -forward.getAsDouble(),
-                -strafe.getAsDouble(),
-                -rotate.getAsDouble(),
+              -  forward.getAsDouble(),
+              -  strafe.getAsDouble(),
+             -   rotate.getAsDouble(),
                 slow.getAsBoolean()
         );
     }

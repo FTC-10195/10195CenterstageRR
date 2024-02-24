@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -32,6 +33,7 @@ public class Slides extends SubsystemBase {
     public static double p  =0.05 , i =0, d = 0.0005;
     private double target;
     private double Kf;
+    ElapsedTime timer;
 
     //use one controller bc using two leads to jank behavior on the right (left?) motor
     private PIDFController controller;
@@ -70,6 +72,7 @@ public class Slides extends SubsystemBase {
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 
    @Override
@@ -79,12 +82,20 @@ public class Slides extends SubsystemBase {
         double pidPower = controller.calculate(currentLeft, Range.clip(target, -20, 2000)); //Range.clip(target, -20, 1500));
        System.out.println("pid piwer" + controller.calculate(currentLeft, Range.clip(target, -20, 1500)) );
 
-
        leftSlide.setPower(-pidPower);
-
 
        rightSlide.setPower(-pidPower);
     }
+
+    public void bottomOut() {
+        target = 0;
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+
 
 
 
@@ -156,17 +167,21 @@ public class Slides extends SubsystemBase {
         }
     }
    public void manualControl(boolean down, boolean up) {
-       if (up && !oldUp ) {
+        int targetChange = 0;
+
+       if (up) {
       //     state = SlideStates.MANUAL;
-           target += 300;
-       } else if (down && !oldDown) {
+           targetChange += 300;
+       } else if (down) {
       //     state = SlideStates.MANUAL;
-           target -= 300;
+           targetChange -= 300;
        }
-       System.out.println("olddown" + oldDown);
-       System.out.println("oldup" + oldUp);
-       oldDown = down;
-       oldUp = up;
+
+       target += Range.clip(targetChange, -600, 600);
+     //  System.out.println("olddown" + oldDown);
+     //  System.out.println("oldup" + oldUp);
+     //  oldDown = down;
+     //  oldUp = up;
 
 
       // telemetry.addData("Left", leftSlide.getCurrentPosition());
