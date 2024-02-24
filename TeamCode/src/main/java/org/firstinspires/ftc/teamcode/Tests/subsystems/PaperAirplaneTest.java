@@ -16,7 +16,7 @@ public class PaperAirplaneTest extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            plane.setPostion(position);
+            plane.setPosition(position);
         }
     }
 }

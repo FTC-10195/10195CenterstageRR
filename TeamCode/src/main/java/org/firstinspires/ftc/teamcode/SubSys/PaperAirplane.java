@@ -13,7 +13,7 @@ public class PaperAirplane {
         plane = hardwareMap.get(Servo.class, "pA");
     }
 
-    public void setPostion(double position) {
+    public void setPosition(double position) {
         plane.setPosition(position);
     }
 

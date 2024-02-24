@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.SubSys.Arm;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.MecanumDrive;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Slides;
 import org.firstinspires.ftc.teamcode.SubSys.DropDown;
+import org.firstinspires.ftc.teamcode.SubSys.PaperAirplane;
 import org.firstinspires.ftc.teamcode.SubSys.SimpleBucket;
 
 @TeleOp
@@ -21,6 +22,7 @@ public class uncg extends LinearOpMode {
 
     public static double armPos = 0;
     public static double dropPos = 0;
+    public double planePos = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,12 +50,11 @@ public class uncg extends LinearOpMode {
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-            Servo dropdrown = hardwareMap.get(Servo.class, "drop");
-        Arm arm = new Arm(hardwareMap);
-        dropdrown.setDirection(Servo.Direction.REVERSE);
-        SimpleBucket bucket = new SimpleBucket(hardwareMap);
-
         DropDown intake = new DropDown(hardwareMap);
+        Arm arm = new Arm(hardwareMap);
+        SimpleBucket bucket = new SimpleBucket(hardwareMap);
+        PaperAirplane plane = new PaperAirplane(hardwareMap);
+
         waitForStart();
         if(isStopRequested()) return;
 
@@ -70,7 +71,15 @@ public class uncg extends LinearOpMode {
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
 
-            intake.spin(gamepad1.a, gamepad1.b, gamepad1.y);
+            if (gamepad1.left_bumper && dropPos != .5) {
+                dropPos += .1;
+                intake.manualMove(dropPos);
+            }
+            else if (gamepad1.right_bumper && dropPos != .1) {
+                dropPos -= .1;
+                intake.manualMove(dropPos);
+            }
+            intake.spin(gamepad1.triangle, gamepad1.circle, gamepad1.square);
 
             if (gamepad1.dpad_up) {
                 //   if (rightSlide.getCurrentPosition() < 2600) {
@@ -108,15 +117,15 @@ public class uncg extends LinearOpMode {
                 bucket.outtakeUpper();
             }
 
+            if(gamepad1.cross) {
+                planePos += .1;
 
-            if(gamepad1.left_bumper) {
-                dropPos = 0;
-            }
-            else if (gamepad1.right_bumper) {
-                dropPos = 1;
+                if(planePos == 1) {
+                    planePos = 0;
+                }
+                plane.setPosition(planePos);
             }
 
-            dropdrown.setPosition(dropPos);
           //  bucket.manualMove(armPos);
             telemetry.addData("Left slide", leftSlide.getCurrentPosition());
             telemetry.addData("Right slide", rightSlide.getCurrentPosition());
