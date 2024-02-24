@@ -21,8 +21,6 @@ public class ArmTest extends LinearOpMode {
 
         while(opModeIsActive()) {
             arm.rotate(pos);
-
-
         }
     }
 }

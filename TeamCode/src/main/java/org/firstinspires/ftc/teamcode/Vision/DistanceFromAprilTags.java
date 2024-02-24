@@ -16,7 +16,7 @@ public class DistanceFromAprilTags extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        int distanceFromAprilTag = detection.rawPose.y.distance;
+      //  int distanceFromAprilTag = detection.rawPose.y.distance;
 
         waitForStart();
 
@@ -29,7 +29,7 @@ public class DistanceFromAprilTags extends LinearOpMode {
             visionPortal = VisionPortal.easyCreateWithDefaults(webcamName, aprilTagProcessor);
             visionPortal.resumeStreaming();
 
-            telemetry.addData("Distance from AprilTag", distanceFromAprilTag);
+      //      telemetry.addData("Distance from AprilTag", distanceFromAprilTag);
 
             }
     }

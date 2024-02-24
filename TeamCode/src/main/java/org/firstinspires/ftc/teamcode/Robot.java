@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Slides;
 public class Robot {
 
     private final Bucket bucket;
-    private final Chamber chamber;
+  //  private final Chamber chamber;
     private final DropDown dropDown;
     private MecanumDrive mecanumDrive;
     private final Slides slides;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         bucket = new Bucket(hardwareMap);
-        chamber = new Chamber(hardwareMap);
+     //   chamber = new Chamber(hardwareMap);
         dropDown = new DropDown(hardwareMap);
         slides = new Slides(hardwareMap, telemetry);
 

@@ -18,7 +18,7 @@ public class SlideTest extends LinearOpMode {
             slide.manualControl(gamepad1.left_trigger > .05, gamepad1.right_trigger > .05);
 
             if(gamepad1.dpad_down) {
-                slide.setTarget(Slides.SlideStates.MINIMUM);
+           //     slide.setTarget(Slides.SlideStates.MINIMUM);
             }
             telemetry.update();
         }

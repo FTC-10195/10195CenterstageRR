@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Commands.ManualDriveCommand;
 import org.firstinspires.ftc.teamcode.SubSys.Arm;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.MecanumDrive;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Slides;
@@ -17,7 +21,6 @@ import org.firstinspires.ftc.teamcode.SubSys.SimpleBucket;
 
 @TeleOp
 @Config
-
 public class uncg extends LinearOpMode {
 
     public static double armPos = 0;
@@ -48,28 +51,27 @@ public class uncg extends LinearOpMode {
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        // rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         DropDown intake = new DropDown(hardwareMap);
         Arm arm = new Arm(hardwareMap);
         SimpleBucket bucket = new SimpleBucket(hardwareMap);
         PaperAirplane plane = new PaperAirplane(hardwareMap);
 
+        GamepadEx controller1 = new GamepadEx(gamepad1);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, telemetry);
+        drive.setDefaultCommand( new ManualDriveCommand(drive,
+                controller1::getLeftY,
+                controller1::getRightX,
+                controller1::getLeftX,
+                () -> controller1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
+        ));
+
         waitForStart();
         if(isStopRequested()) return;
 
         while(opModeIsActive()) {
-            double denominator = Math.max(Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(gamepad1.right_stick_x), 1);
-            double frontLeftPower = (gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) / denominator;
-            double backLeftPower = (gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) / denominator;
-            double frontRightPower = (gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) / denominator;
-            double backRightPower = (gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) / denominator;
-
-            //set motor power values
-            frontLeftMotor.setPower(frontLeftPower); // This is oriented by looking straight on at the robot, so this would be the wheel closest to the slides on the control hub side
-            backLeftMotor.setPower(backLeftPower);
-            frontRightMotor.setPower(frontRightPower);
-            backRightMotor.setPower(backRightPower);
+            CommandScheduler.getInstance().run();
 
             if (gamepad1.left_bumper && dropPos != .5) {
                 dropPos += .1;
@@ -83,9 +85,9 @@ public class uncg extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 //   if (rightSlide.getCurrentPosition() < 2600) {
-                rightSlide.setPower(1);
+                rightSlide.setPower(.25);
                 //    } else if (rightSlide.getCurrentPosition() > 2600) {
-                leftSlide.setPower(1);
+                leftSlide.setPower(.25);
                 //   }
                 //    if (leftSlide.getCurrentPosition() < 2150) {
                 //  leftSlide.setPower(1);
@@ -95,6 +97,7 @@ public class uncg extends LinearOpMode {
             else if (gamepad1.dpad_down) {
                 rightSlide.setPower(-1);
                 leftSlide.setPower(-1);
+
 
             } else {
                 rightSlide.setPower(0);
@@ -119,7 +122,6 @@ public class uncg extends LinearOpMode {
 
             if(gamepad1.cross) {
                 planePos += .1;
-
                 if(planePos == 1) {
                     planePos = 0;
                 }

@@ -18,7 +18,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Commands.ManualDriveCommand;
+import org.firstinspires.ftc.teamcode.Commands.ManualSlides;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.MecanumDrive;
+import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Outtake;
 import org.firstinspires.ftc.teamcode.SubSys.CommandSubsys.Slides;
 
 import java.util.function.BooleanSupplier;
@@ -35,17 +37,20 @@ public class MIT extends LinearOpMode {
     private  ElapsedTime time;
 
     Telemetry telemetry;
+    Outtake outtake;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         drive = new MecanumDrive(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
+        outtake = new Outtake(hardwareMap);
+
         controller1 = new GamepadEx(gamepad1);
         controller2 = new GamepadEx(gamepad2);
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+      //  telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         drive.setDefaultCommand( new ManualDriveCommand(drive,
                  controller1::getLeftY,
@@ -53,20 +58,36 @@ public class MIT extends LinearOpMode {
                  controller1::getLeftX,
                 () -> controller1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
         ));
+        slides.setDefaultCommand( new ManualSlides(
+                slides,
+                        ()-> controller1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5,
+                        ()-> controller1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > .5
+        )
+
+
+
+
+
+
+
+        );
+
+
+
+
+
+
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
 
-            time.reset();
-
-            double loop = 1000/time.milliseconds();
 
             CommandScheduler.getInstance().run();
 
-            telemetry.addData("Loop (hz)", loop);
-            telemetry.update();
         }
+
+        CommandScheduler.getInstance().reset();
     }
 }

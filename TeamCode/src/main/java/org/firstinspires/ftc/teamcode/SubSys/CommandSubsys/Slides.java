@@ -29,9 +29,7 @@ public class Slides extends SubsystemBase {
      */
     DcMotorEx leftSlide;
     DcMotorEx rightSlide;
-    private double Kp;
-    private double Ki;
-    private double Kd;
+    public static double p  =0.05 , i =0, d = 0.0005;
     private double target;
     private double Kf;
 
@@ -39,6 +37,8 @@ public class Slides extends SubsystemBase {
     private PIDFController controller;
 
     Telemetry telemetry;
+    boolean oldUp = false;
+    boolean oldDown = false;
     private final double MINIMUM_POS = -10;
     private final double INTAKEPOS = 30;
     private final double LINE1 = 1000;
@@ -60,9 +60,8 @@ public class Slides extends SubsystemBase {
     }
 
     SlideStates state=  SlideStates.MINIMUM;
-
     public Slides(HardwareMap hardwareMap, Telemetry telemetry) {
-        controller = new PIDFController(Kp, Ki, Kd, Kf);
+        controller = new PIDFController(p, i, d, Kf);
         this.telemetry = telemetry;
         leftSlide = hardwareMap.get(DcMotorEx.class, "ls");
         rightSlide = hardwareMap.get(DcMotorEx.class, "rs");
@@ -76,18 +75,20 @@ public class Slides extends SubsystemBase {
    @Override
     public void periodic() {
         currentLeft = leftSlide.getCurrentPosition();
-        double pidPower = controller.calculate(currentLeft, target);
-        leftSlide.setPower(pidPower);
-        rightSlide.setPower(pidPower);
+        System.out.println("Current left" + currentLeft);
+        double pidPower = controller.calculate(currentLeft, Range.clip(target, -20, 2000)); //Range.clip(target, -20, 1500));
+       System.out.println("pid piwer" + controller.calculate(currentLeft, Range.clip(target, -20, 1500)) );
+
+
+       leftSlide.setPower(-pidPower);
+
+
+       rightSlide.setPower(-pidPower);
     }
 
 
 
-    /***
-     *
-     * @param state
-     * sets the target of the system, inputting a state
-     */
+    /*
     public void setTarget(SlideStates state) {
         switch (state) {
             case MINIMUM:
@@ -108,10 +109,13 @@ public class Slides extends SubsystemBase {
             case MAXIMUM:
                 target= MAXIMUM;
                 break;
-
-
+            case MANUAL:
+                target = Range.clip(target, 0, 1500);
+                break;
         }
+
     }
+    */
 
 
     /*
@@ -138,15 +142,35 @@ public class Slides extends SubsystemBase {
 
   */
 
+    public void trueManual(boolean down, boolean up) {
+        if (up) {
+            leftSlide.setPower(1);
+            rightSlide.setPower(1);
+        } else if(down) {
+            leftSlide.setPower(-1);
+            rightSlide.setPower(-1);
+        }
+        else {
+            leftSlide.setPower(0);
+            rightSlide.setPower(0);
+        }
+    }
    public void manualControl(boolean down, boolean up) {
-       if (up) {
-           target += 20;
+       if (up && !oldUp ) {
+      //     state = SlideStates.MANUAL;
+           target += 300;
+       } else if (down && !oldDown) {
+      //     state = SlideStates.MANUAL;
+           target -= 300;
        }
-       else if (down) {
-           target -= 20;
-       }
-       telemetry.addData("Left", leftSlide.getCurrentPosition());
-       telemetry.addData("Right", rightSlide.getCurrentPosition());
+       System.out.println("olddown" + oldDown);
+       System.out.println("oldup" + oldUp);
+       oldDown = down;
+       oldUp = up;
+
+
+      // telemetry.addData("Left", leftSlide.getCurrentPosition());
+     //  telemetry.addData("Right", rightSlide.getCurrentPosition());
    }
 
 /*
