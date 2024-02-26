@@ -155,6 +155,9 @@ public class Outtake extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        lowerSensor();
+        upperSensor();
         switch(uppercolor) {
             case NOTHING:
                 upperPixel = RevBlinkinLedDriver.BlinkinPattern.BLACK;

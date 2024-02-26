@@ -58,18 +58,18 @@ rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
             drive.robotDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, gamepad1.touchpad);
             if (gamepad1.dpad_up) {
                 leftSlide.setPower(-1);
-                rightSlide.setPower(-1);
+                rightSlide.setPower(1);
             } else if (gamepad1.dpad_down) {
                 leftSlide.setPower(1);
-                rightSlide.setPower(1);
+                rightSlide.setPower(-1);
             } else {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
             if (gamepad1.dpad_left) {
-                armPos = .275;
+                armPos = 0.4;
             } else if (gamepad1.dpad_right) {
-                armPos = .9;
+                armPos = 0.8;
             }
 
             arm.rotate(armPos);
